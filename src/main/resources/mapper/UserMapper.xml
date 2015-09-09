@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.person.dao.UserDAO">
+	<resultMap id="users" type="User">
+		<id column="id" property="id" />
+		<result column="username" property="username" />
+		<result column="password" property="password" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<select id="getUsers" resultMap="users">
+		select * from user
+	</select>
+
+	<insert id="insertUser" parameterType="User" keyProperty="id">
+		insert
+		into user(username, password, status) values (#{username}, #{password}, #{status})
+	</insert>
+
+	<update id="updateUser" parameterType="User">
+		update user set
+		username=#{username}, password=#{password}, status=#{status}
+		where
+		id=#{id}
+	</update>
+
+	<select id="findById" parameterType="int" resultType="User">
+		select *
+		from user where id=#{id}
+	</select>
+
+	<delete id="deleteUser" parameterType="int">
+		delete from user where
+		id=#{id}
+	</delete>
+	
+	<select id="queryUserByPage" resultMap="users">
+		select * from user u
+		<where>
+			<if test="username != null">
+				<!-- AND lower(u.username) like ('%'||(lower(#{username}))||'%') -->
+				AND u.username like CONCAT('%',#{username},'%')
+			</if>
+			<if test="password != null">
+				<!-- AND lower(u.password) like ('%'||(lower(#{password}))||'%') -->
+				AND u.password like CONCAT('%',#{password},'%')
+			</if>
+			limit #{startPage}, #{pageSize}
+		</where>
+	</select>
+</mapper>
